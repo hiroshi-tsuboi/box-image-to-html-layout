@@ -13,6 +13,8 @@ class Box():
         self.index_ = index
         self.parent_ = -1
         self.childs_ = []
+    def __eq__(self, other):
+        return self.index_ == other.index_
     def inside(self, pos):
         for i in range(2):
             if pos[i] < self.mini_[i] or self.maxi_[i] < pos[i]:
@@ -40,7 +42,6 @@ class Group:
             box.dump()
     def empty(self):
         return len(self.boxes_) <= 0
-
 #
 # main program
 #
@@ -116,7 +117,7 @@ for group in groups.values():
         miniArea = sys.maxsize
         for y in groups.values():
             for x in y.boxes_:
-                if box.index_ == x.index_:
+                if box == x:
                     continue
                 if x.include(box) and x.area_ < miniArea:
                     miniArea = x.area_
@@ -125,7 +126,7 @@ for group in groups.values():
             box.parent_ = miniIndex
             childs[miniIndex].append(box.index_)
 
-# validate
+# find root
 root = None
 for group in groups.values():
     for box in group.boxes_:
@@ -136,7 +137,12 @@ for group in groups.values():
             root = box
 
 # TODO render html
-
+#print("<!DOCTYPE html>")
+#print("<html>")
+#print("<head>")
+#print("</head>")
+#print("</html>")
+#sys.exit()
 
 # debug print
 for color, group in groups.items():
