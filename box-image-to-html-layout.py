@@ -177,7 +177,7 @@ while 0 < len(stack):
     if 0 < len(childs[target.index_]):
         option = "justify-content: center; " 
         if root == target:
-            option = "flex-flow: column; " 
+            option = "flex-flow: column; width: %dpx;" % root.size()[0] 
         print(".box%d { display: flex; padding: 5px; %s}" % (target.index_, option))
 
 print("</style>")
