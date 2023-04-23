@@ -169,13 +169,15 @@ while 0 < len(stack):
                 continue
             size = box.size()
             ratio = int(size[0] * 100 / baseSize[0])
-            print(".box%d { width: %d%%; color: #404040; background-color: %s; }" % (box.index_, ratio, colorString(color)))
+            option = ""
+            if index != childs[target.index_][-1]:
+                option = "margin-right: 5px; "
+            print(".box%d { width: %d%%; color: #404040; background-color: %s; %s}" % (box.index_, ratio, colorString(color), option))
             stack.append(box)
             break
     if 0 < len(childs[target.index_]):
         parents += ".box%d " % target.index_
-print("%s{ display: flex; justify-content: space-around; }" % parents)
-
+print("%s{ display: flex; justify-content: center;  padding: 5px; }" % parents)
 
 print("</style>")
 print("</head>")
