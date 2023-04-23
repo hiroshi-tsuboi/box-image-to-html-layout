@@ -5,4 +5,4 @@ convert image to html.
 
 > python3 box-image-to-html-layout.py samples/test-box.png > a.html
 
-![result image](sample/result.png)
+![result image](samples/result.png)
