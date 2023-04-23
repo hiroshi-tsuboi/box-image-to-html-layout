@@ -13,6 +13,7 @@ class Box():
         self.index_ = index
         self.parent_ = -1
         self.childs_ = []
+        self.margin_ = [0, 0] # left, top
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
@@ -25,7 +26,7 @@ class Box():
     def include(self, box):
         return self.inside(box.mini_) or self.inside(box.maxi_)
     def dump(self):
-        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], self.parent_))
+        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], self.parent_, str(self.margin_)))
         if 0 < len(self.childs_):
             print("\tchild(s) = %s" % str(self.childs_))
 
@@ -49,7 +50,15 @@ class Group:
             if box.index_ == index:
                 return box
         return None
-
+    def finalize(self):
+        for i in range(2):
+            for target in self.boxes_:
+                nearMaxi = -sys.maxsize
+                for box in self.boxes_:
+                    if box.maxi_[i] < target.mini_[i]:
+                        if nearMaxi < box.maxi_[i]:
+                            nearMaxi = box.maxi_[i]
+                            target.margin_[i] = target.mini_[i] - nearMaxi - 1
 
 def colorString(color):
     r = "#"
@@ -65,6 +74,10 @@ def colorString(color):
 
 if len(sys.argv) < 2:
     sys.exit()
+
+debug = False
+if "--debug" in sys.argv:
+    debug = True
 
 filename = sys.argv[1]
 
@@ -120,6 +133,10 @@ for y in range(image.size[1]):
         groups[color].add(mini, maxi, index)
         index += 1
 
+# compute margin left and top
+for group in groups.values():
+    group.finalize()
+
 # create box-tree
 childs = {}
 for group in groups.values():
@@ -151,62 +168,63 @@ for group in groups.values():
                 sys.exit()
             root = box
 
-# TODO render html
-print("<!DOCTYPE html>")
-print("<html>")
-print("<head>")
-print('<style type="text/css">')
+# render html
+if not debug:
+    print("<!DOCTYPE html>")
+    print("<html>")
+    print("<head>")
+    print('<style type="text/css">')
 
-stack = [root]
-while 0 < len(stack):
-    target = stack.pop()
-    baseSize = target.size()
-    for index in childs[target.index_]:
-        for color, group in groups.items():
-            box = group.find(index)
-            if box is None:
-                continue
-            size = box.size()
-            ratio = int(size[0] * 100 / baseSize[0])
-            option = ""
-            if index != childs[target.index_][-1]:
-                option = "margin-right: 5px; "
-            print(".box%d { width: %d%%; color: #404040; background-color: %s; %s}" % (box.index_, ratio, colorString(color), option))
-            stack.append(box)
-            break
-    if 0 < len(childs[target.index_]):
-        option = "justify-content: center; " 
-        if root == target:
-            option = "flex-flow: column; width: %dpx;" % root.size()[0] 
-        print(".box%d { display: flex; padding: 5px; %s}" % (target.index_, option))
+    stack = [root]
+    while 0 < len(stack):
+        target = stack.pop()
+        baseSize = target.size()
+        for index in childs[target.index_]:
+            for color, group in groups.items():
+                box = group.find(index)
+                if box is None:
+                    continue
+                size = box.size()
+                ratio = int(size[0] * 100 / baseSize[0])
+                option = ""
+                if index != childs[target.index_][-1]:
+                    option = "margin-right: 5px; "
+                print(".box%d { width: %d%%; color: #404040; background-color: %s; %s}" % (box.index_, ratio, colorString(color), option))
+                stack.append(box)
+                break
+        if 0 < len(childs[target.index_]):
+            option = "justify-content: center; " 
+            if root == target:
+                option = "flex-flow: column; width: %dpx;" % root.size()[0] 
+            print(".box%d { display: flex; padding: 5px; %s}" % (target.index_, option))
 
-print("</style>")
-print("</head>")
-print("<body>")
+    print("</style>")
+    print("</head>")
+    print("<body>")
 
-stack = [root]
-while 0 < len(stack):
-    target = stack.pop()
-    if type(target) is str:
-        print(target)
-        continue
-    print('<div class="box%d">' % target.index_)
-    if 0 == len(childs[target.index_]):
-        print("<article>")
-        print("<h1>box%d</h1>" % target.index_)
-        print("</article>")
-    stack.append("</div>")
-    for index in reversed(childs[target.index_]):
-        for group in groups.values():
-            box = group.find(index)
-            if box is None:
-                continue
-            stack.append(box)
-            break
+    stack = [root]
+    while 0 < len(stack):
+        target = stack.pop()
+        if type(target) is str:
+            print(target)
+            continue
+        print('<div class="box%d">' % target.index_)
+        if 0 == len(childs[target.index_]):
+            print("<article>")
+            print("<h1>box%d</h1>" % target.index_)
+            print("</article>")
+        stack.append("</div>")
+        for index in reversed(childs[target.index_]):
+            for group in groups.values():
+                box = group.find(index)
+                if box is None:
+                    continue
+                stack.append(box)
+                break
 
-print("</body>")
-print("</html>")
-sys.exit()
+    print("</body>")
+    print("</html>")
+    sys.exit()
 
 # debug print
 for color, group in groups.items():
