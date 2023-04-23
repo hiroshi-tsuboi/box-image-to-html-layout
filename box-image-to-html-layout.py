@@ -133,10 +133,6 @@ for y in range(image.size[1]):
         groups[color].add(mini, maxi, index)
         index += 1
 
-# compute margin left and top
-for group in groups.values():
-    group.finalize()
-
 # create box-tree
 childs = {}
 for group in groups.values():
@@ -157,6 +153,10 @@ for group in groups.values():
         if 0 <= miniIndex:
             box.parent_ = miniIndex
             childs[miniIndex].append(box.index_)
+
+# compute margin left and top
+for group in groups.values():
+    group.finalize()
 
 # find root
 root = None
