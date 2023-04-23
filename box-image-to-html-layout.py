@@ -187,15 +187,15 @@ print("<body>")
 stack = [root]
 while 0 < len(stack):
     target = stack.pop()
-    if target is None:
-        print("</div>")
+    if type(target) is str:
+        print(target)
         continue
     print('<div class="box%d">' % target.index_)
     if 0 == len(childs[target.index_]):
         print("<article>")
         print("<h1>box%d</h1>" % target.index_)
         print("</article>")
-    stack.append(None)
+    stack.append("</div>")
     for index in reversed(childs[target.index_]):
         for group in groups.values():
             box = group.find(index)
