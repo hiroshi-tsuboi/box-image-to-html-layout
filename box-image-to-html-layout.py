@@ -158,7 +158,6 @@ print("<head>")
 print('<style type="text/css">')
 
 stack = [root]
-parents = ""
 while 0 < len(stack):
     target = stack.pop()
     baseSize = target.size()
@@ -176,8 +175,10 @@ while 0 < len(stack):
             stack.append(box)
             break
     if 0 < len(childs[target.index_]):
-        parents += ".box%d " % target.index_
-print("%s{ display: flex; justify-content: center;  padding: 5px; }" % parents)
+        option = "justify-content: center; " 
+        if root == target:
+            option = "flex-flow: column; " 
+        print(".box%d { display: flex; padding: 5px; %s}" % (target.index_, option))
 
 print("</style>")
 print("</head>")
