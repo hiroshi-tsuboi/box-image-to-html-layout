@@ -15,6 +15,8 @@ class Box():
         self.childs_ = []
     def __eq__(self, other):
         return self.index_ == other.index_
+    def size(self):
+        return (self.maxi_[0] - self.mini_[0] + 1, self.maxi_[1] - self.mini_[1] + 1)
     def inside(self, pos):
         for i in range(2):
             if pos[i] < self.mini_[i] or self.maxi_[i] < pos[i]:
@@ -42,6 +44,11 @@ class Group:
             box.dump()
     def empty(self):
         return len(self.boxes_) <= 0
+    def find(self, index):
+        for box in self.boxes_:
+            if box.index_ == index:
+                return box
+        return None
 #
 # main program
 #
@@ -137,12 +144,33 @@ for group in groups.values():
             root = box
 
 # TODO render html
-#print("<!DOCTYPE html>")
-#print("<html>")
-#print("<head>")
-#print("</head>")
-#print("</html>")
-#sys.exit()
+print("<!DOCTYPE html>")
+print("<html>")
+print("<head>")
+print('<style type="text/css">')
+stack = [root]
+parents = ""
+while 0 < len(stack):
+    target = stack.pop()
+    baseSize = target.size()
+    for index in childs[target.index_]:
+        for group in groups.values():
+            box = group.find(index)
+            if box is None:
+                continue
+            size = box.size()
+            ratio = int(size[0] * 100 / baseSize[0])
+            print(".box%d { width: %d%%; }" % (index, ratio))
+            stack.append(box)
+            break
+    if 0 < len(childs[target.index_]):
+        parents += ".box%d " % target.index_
+print("%s{ display: flex; }" % parents)
+
+print("</style>")
+print("</head>")
+print("</html>")
+sys.exit()
 
 # debug print
 for color, group in groups.items():
