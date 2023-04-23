@@ -148,6 +148,7 @@ print("<!DOCTYPE html>")
 print("<html>")
 print("<head>")
 print('<style type="text/css">')
+
 stack = [root]
 parents = ""
 while 0 < len(stack):
@@ -169,6 +170,29 @@ print("%s{ display: flex; }" % parents)
 
 print("</style>")
 print("</head>")
+print("<body>")
+
+stack = [root]
+while 0 < len(stack):
+    target = stack.pop()
+    if target is None:
+        print("</div>")
+        continue
+    print('<div class="box%d">' % target.index_)
+    if 0 == len(childs[target.index_]):
+        print("<article>")
+        print("<h1>box%d</h1>" % target.index_)
+        print("</article>")
+    stack.append(None)
+    for index in reversed(childs[target.index_]):
+        for group in groups.values():
+            box = group.find(index)
+            if box is None:
+                continue
+            stack.append(box)
+            break
+
+print("</body>")
 print("</html>")
 sys.exit()
 
