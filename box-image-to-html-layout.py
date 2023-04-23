@@ -49,6 +49,14 @@ class Group:
             if box.index_ == index:
                 return box
         return None
+
+
+def colorString(color):
+    r = "#"
+    for i in range(3):
+        r += "%02X" % color[i]
+    return r
+
 #
 # main program
 #
@@ -155,13 +163,13 @@ while 0 < len(stack):
     target = stack.pop()
     baseSize = target.size()
     for index in childs[target.index_]:
-        for group in groups.values():
+        for color, group in groups.items():
             box = group.find(index)
             if box is None:
                 continue
             size = box.size()
             ratio = int(size[0] * 100 / baseSize[0])
-            print(".box%d { width: %d%%; }" % (index, ratio))
+            print(".box%d { width: %d%%; background-color: %s; }" % (box.index_, ratio, colorString(color)))
             stack.append(box)
             break
     if 0 < len(childs[target.index_]):
