@@ -11,7 +11,7 @@ class Box():
         self.maxi_ = copy.copy(maxi)
         self.area_ = (self.maxi_[0] - self.mini_[0] + 1) * (self.maxi_[1] - self.mini_[1] + 1)
         self.index_ = index
-        self.parent_ = -1
+        self.parent_ = None
         self.childs_ = []
         self.margin_ = [0, 0] # left, top
     def __eq__(self, other):
@@ -26,7 +26,11 @@ class Box():
     def include(self, box):
         return self.inside(box.mini_) or self.inside(box.maxi_)
     def dump(self):
-        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], self.parent_, str(self.margin_)))
+        parentIndex = -1
+        if not self.parent_ is None:
+            parentIndex = self.parent_.index_
+
+        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_)))
         if 0 < len(self.childs_):
             print("\tchild(s) = %s" % str(self.childs_))
 
@@ -141,7 +145,7 @@ for group in groups.values():
 
 for group in groups.values():
     for box in group.boxes_:
-        miniIndex = -1
+        miniParent = None
         miniArea = sys.maxsize
         for y in groups.values():
             for x in y.boxes_:
@@ -149,10 +153,10 @@ for group in groups.values():
                     continue
                 if x.include(box) and x.area_ < miniArea:
                     miniArea = x.area_
-                    miniIndex = x.index_
-        if 0 <= miniIndex:
-            box.parent_ = miniIndex
-            childs[miniIndex].append(box.index_)
+                    miniParent = x
+        if not miniParent is None:
+            box.parent_ = miniParent
+            childs[miniParent.index_].append(box.index_)
 
 # compute margin left and top
 for group in groups.values():
@@ -162,7 +166,7 @@ for group in groups.values():
 root = None
 for group in groups.values():
     for box in group.boxes_:
-        if box.parent_ < 0:
+        if box.parent_ is None:
             if None != root:
                 print("fatal error : base of virtual window must be one.")
                 sys.exit()
