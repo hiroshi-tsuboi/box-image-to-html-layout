@@ -32,7 +32,10 @@ class Box():
 
         print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_)))
         if 0 < len(self.childs_):
-            print("\tchild(s) = %s" % str(self.childs_))
+            indices = []
+            for child in self.childs_:
+                indices.append(child.index_)
+            print("\tchild(s) = %s" % str(indices))
 
 class Group:
     def __init__(self):
@@ -138,10 +141,6 @@ for y in range(image.size[1]):
         index += 1
 
 # create box-tree
-childs = {}
-for group in groups.values():
-    for box in group.boxes_:
-        childs[box.index_] = box.childs_
 
 for group in groups.values():
     for box in group.boxes_:
@@ -156,7 +155,7 @@ for group in groups.values():
                     miniParent = x
         if not miniParent is None:
             box.parent_ = miniParent
-            childs[miniParent.index_].append(box.index_)
+            miniParent.childs_.append(box)
 
 # compute margin left and top
 for group in groups.values():
@@ -183,20 +182,16 @@ if not debug:
     while 0 < len(stack):
         target = stack.pop()
         baseSize = target.size()
-        for index in childs[target.index_]:
-            for color, group in groups.items():
-                box = group.find(index)
-                if box is None:
-                    continue
-                size = box.size()
-                ratio = int(size[0] * 100 / baseSize[0])
-                option = ""
-                if index != childs[target.index_][-1]:
-                    option = "margin-right: 5px; "
-                print(".box%d { width: %d%%; color: #404040; background-color: %s; %s}" % (box.index_, ratio, colorString(color), option))
-                stack.append(box)
-                break
-        if 0 < len(childs[target.index_]):
+        for child in target.childs_:
+            size = child.size()
+            ratio = int(size[0] * 100 / baseSize[0])
+            option = ""
+            if child != target.childs_[-1]:
+                option = "margin-right: 5px; "
+            print(".box%d { width: %d%%; color: #404040; background-color: %s; %s}" % (child.index_, ratio, colorString(color), option))
+            stack.append(child)
+
+        if 0 < len(target.childs_):
             option = "justify-content: center; " 
             if root == target:
                 option = "flex-flow: column; width: %dpx;" % root.size()[0] 
@@ -213,18 +208,13 @@ if not debug:
             print(target)
             continue
         print('<div class="box%d">' % target.index_)
-        if 0 == len(childs[target.index_]):
+        if 0 == len(target.childs_):
             print("<article>")
             print("<h1>box%d</h1>" % target.index_)
             print("</article>")
         stack.append("</div>")
-        for index in reversed(childs[target.index_]):
-            for group in groups.values():
-                box = group.find(index)
-                if box is None:
-                    continue
-                stack.append(box)
-                break
+        for child in reversed(target.childs_):
+            stack.append(child)
 
     print("</body>")
     print("</html>")
