@@ -13,7 +13,7 @@ class Box():
         self.index_ = index
         self.parent_ = None
         self.childs_ = []
-        self.margin_ = [0, 0] # left, top
+        self.margin_ = [sys.maxsize, sys.maxsize] # left, top
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
@@ -27,7 +27,7 @@ class Box():
         return self.inside(box.mini_) or self.inside(box.maxi_)
     def dump(self):
         parentIndex = -1
-        if not self.parent_ is None:
+        if self.parent_ is not None:
             parentIndex = self.parent_.index_
 
         print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_)))
@@ -55,12 +55,21 @@ class Group:
     def finalize(self):
         for i in range(2):
             for target in self.boxes_:
-                nearMaxi = -sys.maxsize
+                if target.parent_ is not None:
+                    margin = target.mini_[i] - target.parent_.mini_[i]
+                    if margin < target.margin_[i]:
+                        target.margin_[i] = margin
                 for box in self.boxes_:
                     if box.maxi_[i] < target.mini_[i]:
-                        if nearMaxi < box.maxi_[i]:
-                            nearMaxi = box.maxi_[i]
-                            target.margin_[i] = target.mini_[i] - nearMaxi - 1
+                        margin = target.mini_[i] - box.maxi_[i] + 1
+                        if margin < target.margin_[i]:
+                            target.margin_[i] = margin
+                for child in target.childs_:
+                    for box in target.childs_:
+                        if box.maxi_[i] < child.mini_[i]:
+                            margin = child.mini_[i] - box.maxi_[i] + 1
+                            if margin < child.margin_[i]:
+                                child.margin_[i] = margin
 
 def colorString(color):
     r = "#"
@@ -148,7 +157,7 @@ for group in groups.values():
                 if x.include(box) and x.area_ < miniArea:
                     miniArea = x.area_
                     miniParent = x
-        if not miniParent is None:
+        if miniParent is not None:
             box.parent_ = miniParent
             miniParent.childs_.append(box)
 
@@ -161,7 +170,7 @@ root = None
 for group in groups.values():
     for box in group.boxes_:
         if box.parent_ is None:
-            if None != root:
+            if root is not None:
                 print("fatal error : base of virtual window must be one.")
                 sys.exit()
             root = box
