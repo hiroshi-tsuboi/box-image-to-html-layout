@@ -52,11 +52,6 @@ class Group:
             box.dump()
     def empty(self):
         return len(self.boxes_) <= 0
-    def find(self, index):
-        for box in self.boxes_:
-            if box.index_ == index:
-                return box
-        return None
     def finalize(self):
         for i in range(2):
             for target in self.boxes_:
