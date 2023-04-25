@@ -6,7 +6,7 @@ from PIL import Image
 #
 
 class Box():
-    def __init__(self, mini, maxi, index):
+    def __init__(self, mini, maxi, index, color):
         self.mini_ = copy.copy(mini)
         self.maxi_ = copy.copy(maxi)
         self.area_ = (self.maxi_[0] - self.mini_[0] + 1) * (self.maxi_[1] - self.mini_[1] + 1)
@@ -14,6 +14,7 @@ class Box():
         self.parent_ = None
         self.childs_ = []
         self.margin_ = [sys.maxsize, sys.maxsize] # left, top
+        self.color_ = copy.copy(color)
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
@@ -36,12 +37,22 @@ class Box():
             for child in self.childs_:
                 indices.append(child.index_)
             print("\tchild(s) = %s" % str(indices))
+    def margin(self):
+        r = ""
+        for i in range(2):
+            if self.margin_[i] <= 0 or self.margin_[i] == sys.maxsize:
+                continue
+            if 0 == i:
+                r += "margin-left: %dpx; " % self.margin_[i]
+            else:
+                r += "margin-top: %dpx; " % self.margin_[i]
+        return r
 
 class Group:
     def __init__(self):
         self.boxes_ = []
-    def add(self, mini, maxi, index):
-        self.boxes_.append(Box(mini, maxi, index))
+    def add(self, mini, maxi, index, color):
+        self.boxes_.append(Box(mini, maxi, index, color))
     def inside(self, pos):
         for box in self.boxes_:
             if box.inside(pos):
@@ -141,7 +152,7 @@ for y in range(image.size[1]):
         if (maxi[0] - mini[0]) <= 1 or (maxi[1] - mini[1]) <= 1:
             continue
 
-        groups[color].add(mini, maxi, index)
+        groups[color].add(mini, maxi, index, color)
         index += 1
 
 # create box-tree
@@ -185,21 +196,18 @@ if not debug:
     stack = [root]
     while 0 < len(stack):
         target = stack.pop()
-        baseSize = target.size()
-        for child in target.childs_:
-            size = child.size()
-            ratio = int(size[0] * 100 / baseSize[0])
-            option = ""
-            if child != target.childs_[-1]:
-                option = "margin-right: 5px; "
-            print(".box%d { width: %d%%; color: #404040; background-color: %s; %s}" % (child.index_, ratio, colorString(color), option))
-            stack.append(child)
+        if target.parent_ is None:
+            option = "flex-flow: column; width: %dpx;" % root.size()[0] 
+            print(".box%d { display: flex; background-color: %s; %s}" % (target.index_, colorString(target.color_), option))
+        else:
+            size = target.size()
+            option = child.margin()
+            if 0 < len(target.childs_):
+                option += "display: flex; "
+            print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorString(target.color_), option))
 
-        if 0 < len(target.childs_):
-            option = "justify-content: center; " 
-            if root == target:
-                option = "flex-flow: column; width: %dpx;" % root.size()[0] 
-            print(".box%d { display: flex; padding: 5px; %s}" % (target.index_, option))
+        for child in target.childs_:
+            stack.append(child)
 
     print("</style>")
     print("</head>")
