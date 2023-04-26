@@ -15,6 +15,7 @@ class Box():
         self.childs_ = []
         self.margin_ = [sys.maxsize, sys.maxsize] # left, top
         self.color_ = copy.copy(color)
+        self.flow_ = 0
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
@@ -47,6 +48,15 @@ class Box():
             else:
                 r += "margin-top: %dpx; " % self.margin_[i]
         return r
+    def sort(self):
+        if len(self.childs_) <= 1:
+            return
+        self.childs_.sort(key=lambda x: x.mini_[1])
+        for i in range(len(self.childs_) - 1):
+            if self.childs_[i + 1].mini_[1] <= self.childs_[i].maxi_[1]:
+                self.childs_.sort(key=lambda x: x.mini_[0])
+                return
+        self.flow_ = 1
 
 class Group:
     def __init__(self):
@@ -64,6 +74,8 @@ class Group:
     def empty(self):
         return len(self.boxes_) <= 0
     def finalize(self):
+        for target in self.boxes_:
+            target.sort()
         for i in range(2):
             for target in self.boxes_:
                 if target.parent_ is not None:
@@ -172,7 +184,7 @@ for group in groups.values():
             box.parent_ = miniParent
             miniParent.childs_.append(box)
 
-# compute margin left and top
+# sort & compute margin left and top
 for group in groups.values():
     group.finalize()
 
@@ -196,15 +208,14 @@ if not debug:
     stack = [root]
     while 0 < len(stack):
         target = stack.pop()
-        if target.parent_ is None:
-            option = "flex-flow: column; width: %dpx;" % root.size()[0] 
-            print(".box%d { display: flex; background-color: %s; %s}" % (target.index_, colorString(target.color_), option))
-        else:
-            size = target.size()
-            option = child.margin()
-            if 0 < len(target.childs_):
-                option += "display: flex; "
-            print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorString(target.color_), option))
+        option = ""
+        if 1 == target.flow_:
+            option += "flex-flow: column; " 
+        size = target.size()
+        option += target.margin()
+        if 0 < len(target.childs_):
+            option += "display: flex; "
+        print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorString(target.color_), option))
 
         for child in target.childs_:
             stack.append(child)
