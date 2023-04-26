@@ -129,7 +129,7 @@ if image == None:
 # create box from image
 
 groups = {}
-index = 0
+boxIndex = 1
 
 for y in range(image.size[1]):
     for x in range(image.size[0]):
@@ -164,8 +164,8 @@ for y in range(image.size[1]):
         if (maxi[0] - mini[0]) <= 1 or (maxi[1] - mini[1]) <= 1:
             continue
 
-        groups[color].add(mini, maxi, index, color)
-        index += 1
+        groups[color].add(mini, maxi, boxIndex, color)
+        boxIndex += 1
 
 # create box-tree
 
@@ -189,14 +189,27 @@ for group in groups.values():
     group.finalize()
 
 # find root
-root = None
+roots = []
 for group in groups.values():
     for box in group.boxes_:
         if box.parent_ is None:
-            if root is not None:
-                print("fatal error : base of virtual window must be one.")
-                sys.exit()
-            root = box
+            roots.append(box)
+if 1 < len(roots):
+    mini = copy.copy(roots[0].mini_)
+    maxi = copy.copy(roots[0].maxi_)
+    for box in root[1:]:
+        for i in range(2):
+            if box.mini_[i] < mini[i]:
+                mini[i] = box.mini_[i]
+            if maxi[i] < box.maxi_[i]:
+                maxi[i] = box.maxi_[i]
+    # create root
+    root = Box(mini, maxi, 0, (0,0,0))
+    for child in roots:
+        child.parent_ = root
+        root.childs_.append(child)
+    root.sort()
+    roots = [root]
 
 # render html
 if not debug:
@@ -205,7 +218,7 @@ if not debug:
     print("<head>")
     print('<style type="text/css">')
 
-    stack = [root]
+    stack = [roots[0]]
     while 0 < len(stack):
         target = stack.pop()
         option = ""
@@ -224,7 +237,7 @@ if not debug:
     print("</head>")
     print("<body>")
 
-    stack = [root]
+    stack = [roots[0]]
     while 0 < len(stack):
         target = stack.pop()
         if type(target) is str:
