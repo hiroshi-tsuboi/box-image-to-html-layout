@@ -94,6 +94,18 @@ class Group:
                             if margin < child.margin_[i]:
                                 child.margin_[i] = margin
 
+class Config():
+    def __init__(self, filename):
+        self.scale_ = 1
+        try:
+            with open(filename, "r") as f:
+                ctxt = json.load(f)
+                if "scale" in ctxt:
+                    self.scale_ = float(ctxt["scale"][0])
+                    print("scale = %f" % self.scale_)
+        except:
+            print("failed to open %s" % filename)
+
 def colorString(color):
     r = "#"
     for i in range(3):
@@ -125,6 +137,13 @@ except:
 
 if image == None:
     sys.exit()
+
+# load config.json
+configFilename = "config.json"
+delimiterIndex = filename.rfind('/')
+if 0 <= delimiterIndex:
+    configFilename = filename[:delimiterIndex+1] + configFilename
+config = Config(configFilename)
 
 # create box from image
 
