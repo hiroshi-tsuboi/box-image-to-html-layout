@@ -95,21 +95,29 @@ class Group:
                                 child.margin_[i] = margin
 
 class Config():
-    def __init__(self, filename):
+    def __init__(self, filename, debug):
         self.scale_ = 1
         try:
             with open(filename, "r") as f:
                 ctxt = json.load(f)
                 if "scale" in ctxt:
                     self.scale_ = float(ctxt["scale"][0])
-                    print("scale = %f" % self.scale_)
+                    if debug:
+                        print("scale = %f" % self.scale_)
         except:
             print("failed to open %s" % filename)
 
-def colorString(color):
+def colorToString(color):
     r = "#"
     for i in range(3):
         r += "%02X" % color[i]
+    return r
+
+def stringToColor(string):
+    r = []
+    for i in range(3):
+        x = string[1+i*2:1+i*2+2]
+        r.append(int(x, 16))
     return r
 
 #
@@ -143,7 +151,7 @@ configFilename = "config.json"
 delimiterIndex = filename.rfind('/')
 if 0 <= delimiterIndex:
     configFilename = filename[:delimiterIndex+1] + configFilename
-config = Config(configFilename)
+config = Config(configFilename, debug)
 
 # create box from image
 
@@ -247,7 +255,7 @@ if not debug:
         option += target.margin()
         if 0 < len(target.childs_):
             option += "display: flex; "
-        print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorString(target.color_), option))
+        print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
 
         for child in target.childs_:
             stack.append(child)
@@ -278,7 +286,8 @@ if not debug:
 # debug print
 for color, group in groups.items():
     if not group.empty():
-        print("color=%s" % str(color))
+        print("color = %s" % colorToString(color))
+        #print("%s" % (stringToColor(colorToString(color))))
         group.dump()
 
 
