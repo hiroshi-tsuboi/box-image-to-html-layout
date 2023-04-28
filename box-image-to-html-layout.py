@@ -250,11 +250,12 @@ if not debug:
         target = stack.pop()
         option = ""
         if 1 == target.flow_:
-            option += "flex-flow: column; " 
+            #option += "float: none; "
+            pass
+        else:
+            option += "float: left; "
         size = target.size()
         option += target.margin()
-        if 0 < len(target.childs_):
-            option += "display: flex; "
         print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
 
         for child in target.childs_:
