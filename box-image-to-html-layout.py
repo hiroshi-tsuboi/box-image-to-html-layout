@@ -96,16 +96,22 @@ class Group:
 
 class Config():
     def __init__(self, filename, debug):
-        self.scale_ = 1
+        self.scale_ = [1]
         try:
             with open(filename, "r") as f:
                 ctxt = json.load(f)
                 if "scale" in ctxt:
-                    self.scale_ = float(ctxt["scale"][0])
-                    if debug:
-                        print("scale = %f" % self.scale_)
+                    self.scale_.clear()
+                    for x in ctxt["scale"]:
+                        self.scale_.append(float(x))
         except:
             print("failed to open %s" % filename)
+
+        if len(self.scale_) == 1:
+            self.scale_.append(self.scale_[0])
+
+        if debug:
+            print("scale = %s" % str(self.scale_))
 
 def colorToString(color):
     r = "#"
