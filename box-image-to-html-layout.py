@@ -166,27 +166,25 @@ boxIndex = 1
 
 for y in range(image.size[1]):
     for x in range(image.size[0]):
-        pos = (x, y)
-
-        pixel = image.getpixel(pos)
+        pixel = image.getpixel((x, y))
 
         # ignore alpha
         color = (pixel[0], pixel[1], pixel[2])
 
         if color in groups:
-            if groups[color].inside(pos):
+            if groups[color].inside((x, y)):
                 continue
         else:
             groups[color] = Group()
 
         # extent
 
-        mini = pos
+        mini = [x, y]
         maxi = [x, y]
 
         for i in range(2):
             t = [x, y]
-            for j in range(pos[i] + 1, image.size[i]):
+            for j in range(mini[i] + 1, image.size[i]):
                 t[i] = j
                 pixel = image.getpixel((t[0], t[1]))
                 if color != (pixel[0], pixel[1], pixel[2]):
