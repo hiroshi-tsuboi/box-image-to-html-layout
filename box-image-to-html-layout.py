@@ -198,6 +198,13 @@ for y in range(image.size[1]):
         groups[color].add(mini, maxi, boxIndex, color)
         boxIndex += 1
 
+# scale box
+for group in groups.values():
+    for box in group.boxes_:
+        for i in range(2):
+            box.mini_[i] = int(box.mini_[i] * config.scale_[i])
+            box.maxi_[i] = int(box.maxi_[i] * config.scale_[i])
+
 # create box-tree
 
 for group in groups.values():
