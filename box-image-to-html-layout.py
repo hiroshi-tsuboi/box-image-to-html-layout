@@ -192,7 +192,7 @@ for y in range(image.size[1]):
                 maxi[i] = j
 
         # discard thin box
-        if (maxi[0] - mini[0]) <= 1 or (maxi[1] - mini[1]) <= 1:
+        if (maxi[0] - mini[0]) * config.scale_[0] <= 1 or (maxi[1] - mini[1]) * config.scale_[1] <= 1:
             continue
 
         groups[color].add(mini, maxi, boxIndex, color)
