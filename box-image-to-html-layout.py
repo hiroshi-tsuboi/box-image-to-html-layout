@@ -20,6 +20,15 @@ class Box():
         return self.index_ == other.index_
     def size(self):
         return (self.maxi_[0] - self.mini_[0] + 1, self.maxi_[1] - self.mini_[1] + 1)
+    def scale(self, _scale):
+        for i in range(2):
+            x = _scale[i]
+            if x == 1.0:
+                continue
+            self.mini_[i] = int(self.mini_[i] * x)
+            self.maxi_[i] = int(self.maxi_[i] * x)
+        size = self.size()
+        self.area_ = size[0] * size[1]
     def inside(self, pos):
         for i in range(2):
             if pos[i] < self.mini_[i] or self.maxi_[i] < pos[i]:
@@ -205,11 +214,7 @@ for y in range(image.size[1]):
 # scale box
 for group in groups.values():
     for box in group.boxes_:
-        for i in range(2):
-            box.mini_[i] = int(box.mini_[i] * config.scale_[i])
-            box.maxi_[i] = int(box.maxi_[i] * config.scale_[i])
-        size = box.size()
-        box.area_ = size[0] * size[1]
+        box.scale(config.scale_)
 
 # create box-tree
 
