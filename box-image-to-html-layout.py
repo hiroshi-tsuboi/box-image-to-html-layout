@@ -57,6 +57,13 @@ class Box():
                 self.childs_.sort(key=lambda x: x.mini_[0])
                 return
         self.flow_ = 1
+    def linkable(self, box):
+        mini = [min(self.mini_[0], box.mini_[0]), min(self.mini_[1], box.mini_[1])]
+        maxi = [max(self.maxi_[0], box.maxi_[0]), max(self.maxi_[1], box.maxi_[1])]
+        r = Box(mini, maxi, 0, (0,0,0))
+        if r.area_ == (self.area_ + box.area_):
+            return True
+        return None
 
 class Group:
     def __init__(self):
