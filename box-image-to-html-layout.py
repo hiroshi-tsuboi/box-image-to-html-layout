@@ -9,13 +9,14 @@ class Box():
     def __init__(self, mini, maxi, index, color):
         self.mini_ = copy.copy(mini)
         self.maxi_ = copy.copy(maxi)
-        self.area_ = (self.maxi_[0] - self.mini_[0] + 1) * (self.maxi_[1] - self.mini_[1] + 1)
+        #self.area_ = (self.maxi_[0] - self.mini_[0] + 1) * (self.maxi_[1] - self.mini_[1] + 1)
         self.index_ = index
         self.parent_ = None
         self.childs_ = []
         self.margin_ = [sys.maxsize, sys.maxsize] # left, top
         self.color_ = copy.copy(color)
         self.flow_ = 0
+        self.scale([1,1])
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
