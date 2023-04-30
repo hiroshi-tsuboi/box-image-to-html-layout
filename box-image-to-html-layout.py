@@ -57,10 +57,10 @@ class Box():
                 self.childs_.sort(key=lambda x: x.mini_[0])
                 return
         self.flow_ = 1
-    def merge(self, box):
+    def merge(self, box, index):
         mini = [min(self.mini_[0], box.mini_[0]), min(self.mini_[1], box.mini_[1])]
         maxi = [max(self.maxi_[0], box.maxi_[0]), max(self.maxi_[1], box.maxi_[1])]
-        return Box(mini, maxi, 0, (0,0,0))
+        return Box(mini, maxi, index, (0,0,0))
 
 class Group:
     def __init__(self):
@@ -208,6 +208,8 @@ for group in groups.values():
         for i in range(2):
             box.mini_[i] = int(box.mini_[i] * config.scale_[i])
             box.maxi_[i] = int(box.maxi_[i] * config.scale_[i])
+        size = box.size()
+        box.area_ = size[0] * size[1]
 
 # create box-tree
 
@@ -225,6 +227,37 @@ for group in groups.values():
         if miniParent is not None:
             box.parent_ = miniParent
             miniParent.childs_.append(box)
+
+# merge box
+roots = []
+for group in groups.values():
+    for box in group.boxes_:
+        if box.parent_ is None:
+            roots.append(box)
+while 1 < len(roots):
+    redo = False
+    for y in roots:
+        cboxes = [y]
+        for x in roots:
+            if x == y:
+                continue
+            z = x.merge(y, boxIndex)
+            if z.area_ == (x.area_ + y.area_):
+                cboxes.append(x)
+        if 1 < len(cboxes):
+            z = copy.copy(cboxes[0])
+            for box in cboxes[1:]:
+                z = z.merge(box, boxIndex)
+            for box in cboxes:
+                box.parent_ = z
+                z.childs_.append(box)
+                roots.remove(box)
+            roots.append(z)
+            z.dump()
+            boxIndex += 1
+            redo = True
+    if redo == False:
+        break
 
 # sort & compute margin left and top
 for group in groups.values():
