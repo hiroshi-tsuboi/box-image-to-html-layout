@@ -116,7 +116,8 @@ class Config():
             self.scale_.append(self.scale_[0])
 
         if debug:
-            print("scale = %s" % str(self.scale_))
+            #print("scale = %s" % str(self.scale_))
+            pass
 
 def colorToString(color):
     r = "#"
@@ -234,7 +235,7 @@ while 1 < len(roots):
             if x == y:
                 continue
             z = x.merge(y, boxIndex)
-            print("%d : %d = %d(%d) + %d(%d)" % (z.area_, x.area_ + y.area_, x.area_, x.index_, y.area_, y.index_))
+            #print("%d : %d = %d(%d) + %d(%d)" % (z.area_, x.area_ + y.area_, x.area_, x.index_, y.area_, y.index_))
             if z.area_ == (x.area_ + y.area_):
                 cboxes.append(x)
         if 1 < len(cboxes):
@@ -246,7 +247,7 @@ while 1 < len(roots):
                 z.childs_.append(box)
                 roots.remove(box)
             roots.append(z)
-            z.dump()
+            #z.dump()
             boxIndex += 1
             redo = True
     if redo == False:
@@ -256,6 +257,7 @@ while 1 < len(roots):
 for group in groups.values():
     group.finalize()
 
+"""
 # find root
 roots = []
 for group in groups.values():
@@ -278,6 +280,7 @@ if 1 < len(roots):
         root.childs_.append(child)
     root.sort()
     roots = [root]
+"""
 
 # render html
 if not debug:
