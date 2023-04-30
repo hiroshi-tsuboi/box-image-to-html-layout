@@ -239,7 +239,7 @@ for group in groups.values():
 if 1 < len(roots):
     mini = copy.copy(roots[0].mini_)
     maxi = copy.copy(roots[0].maxi_)
-    for box in root[1:]:
+    for box in roots[1:]:
         for i in range(2):
             if box.mini_[i] < mini[i]:
                 mini[i] = box.mini_[i]
