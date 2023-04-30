@@ -9,27 +9,18 @@ class Box():
     def __init__(self, mini, maxi, index, color):
         self.mini_ = copy.copy(mini)
         self.maxi_ = copy.copy(maxi)
-        #self.area_ = (self.maxi_[0] - self.mini_[0] + 1) * (self.maxi_[1] - self.mini_[1] + 1)
         self.index_ = index
         self.parent_ = None
         self.childs_ = []
         self.margin_ = [sys.maxsize, sys.maxsize] # left, top
         self.color_ = copy.copy(color)
         self.flow_ = 0
-        self.scale([1,1])
+        size = self.size()
+        self.area_ = size[0] * size[1]
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
         return (self.maxi_[0] - self.mini_[0] + 1, self.maxi_[1] - self.mini_[1] + 1)
-    def scale(self, _scale):
-        for i in range(2):
-            x = _scale[i]
-            if x == 1.0:
-                continue
-            self.mini_[i] = int(self.mini_[i] * x)
-            self.maxi_[i] = int(self.maxi_[i] * x)
-        size = self.size()
-        self.area_ = size[0] * size[1]
     def inside(self, pos):
         for i in range(2):
             if pos[i] < self.mini_[i] or self.maxi_[i] < pos[i]:
@@ -206,16 +197,11 @@ for y in range(image.size[1]):
                 maxi[i] = j
 
         # discard thin box
-        if (maxi[0] - mini[0]) * config.scale_[0] <= 1 or (maxi[1] - mini[1]) * config.scale_[1] <= 1:
+        if (maxi[0] - mini[0]) <= 1 or (maxi[1] - mini[1]) <= 1:
             continue
 
         groups[color].add(mini, maxi, boxIndex, color)
         boxIndex += 1
-
-# scale box
-for group in groups.values():
-    for box in group.boxes_:
-        box.scale(config.scale_)
 
 # create box-tree
 
@@ -248,6 +234,7 @@ while 1 < len(roots):
             if x == y:
                 continue
             z = x.merge(y, boxIndex)
+            print("%d : %d = %d(%d) + %d(%d)" % (z.area_, x.area_ + y.area_, x.area_, x.index_, y.area_, y.index_))
             if z.area_ == (x.area_ + y.area_):
                 cboxes.append(x)
         if 1 < len(cboxes):
