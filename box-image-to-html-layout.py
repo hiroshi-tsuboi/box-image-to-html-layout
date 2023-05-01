@@ -155,9 +155,9 @@ if image == None:
 
 # load config.json
 configFilename = "config.json"
-delimiterIndex = filename.rfind('/')
-if 0 <= delimiterIndex:
-    configFilename = filename[:delimiterIndex+1] + configFilename
+basePathIndex = filename.rfind('/')
+if 0 <= basePathIndex:
+    configFilename = filename[:basePathIndex+1] + configFilename
 config = Config(configFilename, debug)
 
 # create box from image
