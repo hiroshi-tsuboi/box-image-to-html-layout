@@ -225,7 +225,8 @@ for group in groups.values():
         if box.parent_ is None:
             roots.append(box)
 while 1 < len(roots):
-    redo = False
+    roots.sort(key=lambda x: x.area_)
+    nboxes = []
     for y in roots:
         cboxes = [y]
         for x in roots:
@@ -245,12 +246,13 @@ while 1 < len(roots):
                 box.margin_.clear()
                 roots.remove(box)
             z.sort()
-            roots.append(z)
+            nboxes.append(z)
             #z.dump()
             boxIndex += 1
-            redo = True
-    if redo == False:
+            break
+    if 0 == len(nboxes):
         break
+    roots.append(nboxes[0])
 
 # sort & compute margin left and top
 for group in groups.values():
