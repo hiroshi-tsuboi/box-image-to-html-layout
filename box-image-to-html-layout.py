@@ -269,9 +269,11 @@ if not debug:
         option = "box-sizing: border-box; "
         if 1 == target.flow_:
             #option += "float: none; "
+            option += "display: flex; flex-direction: column; "
             pass
         else:
-            option += "float: left; "
+            #option += "float: left; "
+            option += "display: flex; flex-direction: row; "
         size = target.size()
         option += target.margin_.string()
         print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
