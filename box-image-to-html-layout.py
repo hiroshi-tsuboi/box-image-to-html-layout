@@ -5,6 +5,22 @@ from PIL import Image
 
 #
 
+class Margin():
+    def __init__(self):
+        self.leftop_ = [sys.maxsize, sys.maxsize]
+    def clear(self):
+        self.leftop_ = [0, 0]
+    def update(self, i, x):
+        self.leftop_[i] = min(self.leftop_[i], x)
+    def string(self):
+        r = ""
+        substr = ("left", "top")
+        for i in range(2):
+            if self.leftop_[i] <= 0 or self.leftop_[i] == sys.maxsize:
+                continue
+            r += "margin-%s: %dpx; " % (substr[i], self.leftop_[i])
+        return r
+
 class Box():
     def __init__(self, mini, maxi, index, color):
         self.mini_ = copy.copy(mini)
@@ -12,7 +28,7 @@ class Box():
         self.index_ = index
         self.parent_ = None
         self.childs_ = []
-        self.margin_ = [sys.maxsize, sys.maxsize] # left, top
+        self.margin_ = Margin()
         self.color_ = copy.copy(color)
         self.flow_ = 0
         size = self.size()
@@ -33,22 +49,12 @@ class Box():
         if self.parent_ is not None:
             parentIndex = self.parent_.index_
 
-        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_)))
+        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_.leftop_)))
         if 0 < len(self.childs_):
             indices = []
             for child in self.childs_:
                 indices.append(child.index_)
             print("\tchild(s) = %s" % str(indices))
-    def margin(self):
-        r = ""
-        for i in range(2):
-            if self.margin_[i] <= 0 or self.margin_[i] == sys.maxsize:
-                continue
-            if 0 == i:
-                r += "margin-left: %dpx; " % self.margin_[i]
-            else:
-                r += "margin-top: %dpx; " % self.margin_[i]
-        return r
     def sort(self):
         if len(self.childs_) <= 1:
             return
@@ -84,20 +90,14 @@ class Group:
         for i in range(2):
             for target in self.boxes_:
                 if target.parent_ is not None:
-                    margin = target.mini_[i] - target.parent_.mini_[i]
-                    if margin < target.margin_[i]:
-                        target.margin_[i] = margin
+                    target.margin_.update(i, target.mini_[i] - target.parent_.mini_[i])
                 for box in self.boxes_:
                     if box.maxi_[i] < target.mini_[i]:
-                        margin = target.mini_[i] - box.maxi_[i] + 1
-                        if margin < target.margin_[i]:
-                            target.margin_[i] = margin
+                        target.margin_.update(i, target.mini_[i] - box.maxi_[i] + 1)
                 for child in target.childs_:
                     for box in target.childs_:
                         if box.maxi_[i] < child.mini_[i]:
-                            margin = child.mini_[i] - box.maxi_[i] + 1
-                            if margin < child.margin_[i]:
-                                child.margin_[i] = margin
+                            child.margin_.update(i, child.mini_[i] - box.maxi_[i] + 1)
 
 class Config():
     def __init__(self, filename, debug):
@@ -246,6 +246,7 @@ while 1 < len(roots):
                 box.parent_ = z
                 z.childs_.append(box)
                 roots.remove(box)
+            z.sort()
             roots.append(z)
             #z.dump()
             boxIndex += 1
@@ -299,7 +300,7 @@ if not debug:
         else:
             option += "float: left; "
         size = target.size()
-        option += target.margin()
+        option += target.margin_.string()
         print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
 
         for child in target.childs_:
