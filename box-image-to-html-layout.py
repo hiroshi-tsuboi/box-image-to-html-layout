@@ -258,31 +258,6 @@ while 1 < len(roots):
 for group in groups.values():
     group.finalize()
 
-"""
-# find root
-roots = []
-for group in groups.values():
-    for box in group.boxes_:
-        if box.parent_ is None:
-            roots.append(box)
-if 1 < len(roots):
-    mini = copy.copy(roots[0].mini_)
-    maxi = copy.copy(roots[0].maxi_)
-    for box in roots[1:]:
-        for i in range(2):
-            if box.mini_[i] < mini[i]:
-                mini[i] = box.mini_[i]
-            if maxi[i] < box.maxi_[i]:
-                maxi[i] = box.maxi_[i]
-    # create root
-    root = Box(mini, maxi, 0, (0,0,0))
-    for child in roots:
-        child.parent_ = root
-        root.childs_.append(child)
-    root.sort()
-    roots = [root]
-"""
-
 # render html
 if not debug:
     print("<!DOCTYPE html>")
