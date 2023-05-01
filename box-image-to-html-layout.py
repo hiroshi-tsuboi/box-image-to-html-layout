@@ -216,7 +216,9 @@ for group in groups.values():
         if box.parent_ is None:
             roots.append(box)
 while 1 < len(roots):
-    roots.sort(key=lambda x: x.area_)
+    #roots.sort(key=lambda x: x.area_)
+    #roots.sort(key=lambda x: x.mini_[1] << 16 + x.mini_[0])
+    roots.sort(key=lambda x: x.color_)
     nboxes = []
     for y in roots:
         cboxes = [y]
