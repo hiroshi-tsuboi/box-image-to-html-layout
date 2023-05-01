@@ -79,8 +79,6 @@ class Group:
             if box.inside(pos):
                 return True
         return False
-    def empty(self):
-        return len(self.boxes_) <= 0
     def finalize(self):
         for target in self.boxes_:
             target.sort()
