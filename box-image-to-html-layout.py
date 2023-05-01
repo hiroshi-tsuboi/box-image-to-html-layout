@@ -260,7 +260,9 @@ if not debug:
     while 0 < len(stack):
         target = stack.pop()
         option = "box-sizing: border-box; "
-        if 1 == target.flow_:
+        if len(target.childs_) <= 1:
+            pass
+        elif 1 == target.flow_:
             #option += "float: none; "
             option += "display: flex; flex-direction: column; "
             pass
