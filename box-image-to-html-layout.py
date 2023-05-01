@@ -301,7 +301,7 @@ if not debug:
         option += target.margin_.string()
         print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
 
-        for child in target.childs_:
+        for child in reversed(target.childs_):
             stack.append(child)
 
     print("</style>")
