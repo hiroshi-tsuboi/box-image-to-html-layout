@@ -105,7 +105,7 @@ class Config():
                     for x in ctxt["scale"]:
                         self.scale_.append(float(x))
         except:
-            print("failed to open %s" % filename)
+            print("failed to open %s" % filename, file=sys.stderr)
 
         if len(self.scale_) == 1:
             self.scale_.append(self.scale_[0])
@@ -140,7 +140,7 @@ image = None
 try:
     image = Image.open(filename)
 except:
-    print("failed to open %s" % filename)
+    print("failed to open %s" % filename, file=sys.stderr)
     sys.exit()
 
 if image == None:
