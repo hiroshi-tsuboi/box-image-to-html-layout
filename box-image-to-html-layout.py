@@ -266,7 +266,7 @@ if not debug:
     stack = [roots[0]]
     while 0 < len(stack):
         target = stack.pop()
-        option = ""
+        option = "box-sizing: border-box; "
         if 1 == target.flow_:
             #option += "float: none; "
             pass
