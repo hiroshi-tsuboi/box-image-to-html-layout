@@ -1,8 +1,8 @@
 # Overview
 convert image to html.
 
-![source image](samples/a.png)
+![source image](samples/b.png)
 
-> python3 box-image-to-html-layout.py samples/a.png > a.html
+> python3 box-image-to-html-layout.py samples/b.png > b.html
 
-![result image](samples/result-a.png)
+![result image](samples/result-b.png)
