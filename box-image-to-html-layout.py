@@ -319,7 +319,7 @@ if not debug:
         print('<div class="box%d">' % target.index_)
         if 0 == len(target.childs_):
             print("<article>")
-            print("<h1>box%d</h1>" % target.index_)
+            print("box%d" % target.index_)
             print("</article>")
         stack.append("</div>")
         for child in reversed(target.childs_):
