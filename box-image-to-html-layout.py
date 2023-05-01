@@ -120,13 +120,6 @@ def colorToString(color):
         r += "%02X" % color[i]
     return r
 
-def stringToColor(string):
-    r = []
-    for i in range(3):
-        x = string[1+i*2:1+i*2+2]
-        r.append(int(x, 16))
-    return r
-
 #
 # main program
 #
