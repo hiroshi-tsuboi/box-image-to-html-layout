@@ -49,7 +49,7 @@ class Box():
         if self.parent_ is not None:
             parentIndex = self.parent_.index_
 
-        print("index=%d mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_.leftop_)))
+        print("index=%d color=%s mini=(%d,%d) maxi=(%d,%d) parent=%d margin=%s" % (self.index_, str(self.color_), self.mini_[0], self.mini_[1], self.maxi_[0], self.maxi_[1], parentIndex, str(self.margin_.leftop_)))
         if 0 < len(self.childs_):
             indices = []
             for child in self.childs_:
@@ -79,9 +79,6 @@ class Group:
             if box.inside(pos):
                 return True
         return False
-    def dump(self):
-        for box in self.boxes_:
-            box.dump()
     def empty(self):
         return len(self.boxes_) <= 0
     def finalize(self):
@@ -245,6 +242,7 @@ while 1 < len(roots):
             for box in cboxes:
                 box.parent_ = z
                 z.childs_.append(box)
+                box.margin_.clear()
                 roots.remove(box)
             z.sort()
             roots.append(z)
@@ -330,10 +328,10 @@ if not debug:
     sys.exit()
 
 # debug print
-for color, group in groups.items():
-    if not group.empty():
-        print("color = %s" % colorToString(color))
-        #print("%s" % (stringToColor(colorToString(color))))
-        group.dump()
-
+stack = roots
+while 0 < len(stack):
+    target = stack.pop()
+    target.dump()
+    for child in reversed(target.childs_):
+        stack.append(child)
 
