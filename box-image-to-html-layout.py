@@ -229,6 +229,7 @@ while 1 < len(roots):
             #print("%d : %d = %d(%d) + %d(%d)" % (z.area_, x.area_ + y.area_, x.area_, x.index_, y.area_, y.index_))
             if z.area_ == (x.area_ + y.area_):
                 cboxes.append(x)
+                break
         if 1 < len(cboxes):
             z = copy.copy(cboxes[0])
             for box in cboxes[1:]:
