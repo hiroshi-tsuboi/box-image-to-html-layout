@@ -217,9 +217,6 @@ for group in groups.values():
             roots.append(box)
 roots.sort(key=lambda x: x.index_)
 while 1 < len(roots):
-    #roots.sort(key=lambda x: x.area_)
-    #roots.sort(key=lambda x: x.mini_[1] << 16 + x.mini_[0])
-    #roots.sort(key=lambda x: x.color_)
     maxiIndex = boxIndex
     for y in roots:
         cboxes = [y]
