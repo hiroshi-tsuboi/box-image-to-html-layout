@@ -216,9 +216,12 @@ for group in groups.values():
         if box.parent_ is None:
             roots.append(box)
 roots.sort(key=lambda x: x.index_)
+maxiWidth = image.size[0]
 while 1 < len(roots):
     maxiIndex = boxIndex
     for y in roots:
+        if y.size()[0] == maxiWidth:
+            continue
         cboxes = [y]
         for x in roots:
             z = x.merge(y, boxIndex)
@@ -248,6 +251,9 @@ while 1 < len(roots):
             boxIndex += 1
             break
     if maxiIndex == boxIndex:
+        if maxiWidth != 0:
+            maxiWidth = 0
+            continue
         break
 
 # sort & compute margin left and top
