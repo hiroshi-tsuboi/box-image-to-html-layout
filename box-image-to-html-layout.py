@@ -224,8 +224,6 @@ while 1 < len(roots):
     for y in roots:
         cboxes = [y]
         for x in roots:
-            if x == y:
-                continue
             z = x.merge(y, boxIndex)
             #print("%d : %d = %d(%d) + %d(%d)" % (z.area_, x.area_ + y.area_, x.area_, x.index_, y.area_, y.index_))
             if z.area_ == (x.area_ + y.area_):
