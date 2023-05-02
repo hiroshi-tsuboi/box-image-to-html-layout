@@ -220,7 +220,7 @@ while 1 < len(roots):
     #roots.sort(key=lambda x: x.area_)
     #roots.sort(key=lambda x: x.mini_[1] << 16 + x.mini_[0])
     #roots.sort(key=lambda x: x.color_)
-    nboxes = []
+    maxiIndex = boxIndex
     for y in roots:
         cboxes = [y]
         for x in roots:
@@ -241,16 +241,17 @@ while 1 < len(roots):
                 box.parent_ = z
                 z.childs_.append(box)
                 box.margin_.clear()
-                roots.remove(box)
+                if cboxes[0] != box:
+                    roots.remove(box)
             z.sort()
-            nboxes.append(z)
+            # y -> z : swap box
+            index = roots.index(cboxes[0])
+            roots[index] = z
             #z.dump()
             boxIndex += 1
             break
-    if 0 == len(nboxes):
+    if maxiIndex == boxIndex:
         break
-    #roots.append(nboxes[0])
-    roots.insert(0, nboxes[0])
 
 # sort & compute margin left and top
 for group in groups.values():
