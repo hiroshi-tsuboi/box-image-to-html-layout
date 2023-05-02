@@ -229,14 +229,11 @@ while 1 < len(roots):
             z = x.merge(y, boxIndex)
             #print("%d : %d = %d(%d) + %d(%d)" % (z.area_, x.area_ + y.area_, x.area_, x.index_, y.area_, y.index_))
             if z.area_ == (x.area_ + y.area_):
-                if y.mini_[0] == x.mini_[0] and y.maxi_[0] == x.maxi_[0]:
-                    pass
-                elif y.mini_[1] == x.mini_[1] and y.maxi_[1] == x.maxi_[1]:
-                    pass
-                else:
-                    break
-                cboxes.append(x)
-                y = x
+                for i in range(2):
+                    if cboxes[0].mini_[i] == x.mini_[i] and cboxes[0].maxi_[i] == x.maxi_[i]:
+                        cboxes.append(x)
+                        y = x
+                        break
                 #break
         if 1 < len(cboxes):
             z = copy.copy(cboxes[0])
