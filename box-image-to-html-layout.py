@@ -268,9 +268,11 @@ if not debug:
     print('<style type="text/css">')
 
     stack = [roots[0]]
+    allBoxString = ""
     while 0 < len(stack):
         target = stack.pop()
-        option = "box-sizing: border-box; "
+        allBoxString += ".box%d, " % target.index_
+        option = ""
         if len(target.childs_) <= 1:
             pass
         elif 1 == target.flow_:
@@ -282,10 +284,11 @@ if not debug:
             option += "display: flex; flex-direction: row; "
         size = target.size()
         option += target.margin_.string()
-        print(".box%d { width: %dpx; height: %dpx; color: #404040; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
+        print(".box%d { width: %dpx; height: %dpx; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
 
         for child in reversed(target.childs_):
             stack.append(child)
+    print("%s { color: #404040; box-sizing: border-box; }" % allBoxString[:-2])
 
     print("</style>")
     print("</head>")
