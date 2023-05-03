@@ -125,8 +125,10 @@ def catFile(filename):
                 l = line.strip()
                 if 0 < len(l):
                     print(l)
+        return True
     except:
         print("failed to open %s" % filename, file=sys.stderr)
+    return False
 
 #
 # main program
@@ -308,6 +310,10 @@ if not debug:
     print("</head>")
     print("<body>")
 
+    boxFileExt = "html"
+    if template:
+        boxFileExt = "tplt"
+
     stack = [roots[0]]
     while 0 < len(stack):
         target = stack.pop()
@@ -316,9 +322,10 @@ if not debug:
             continue
         print('<div class="box%d">' % target.index_)
         if 0 == len(target.childs_):
-            print("<article>")
-            print("box%d" % target.index_)
-            print("</article>")
+            if not catFile(filename[:basePathIndex+1] + "box%d." % target.index_ + boxFileExt):
+                print("<article>")
+                print("box%d" % target.index_)
+                print("</article>")
         stack.append("</div>")
         for child in reversed(target.childs_):
             stack.append(child)
