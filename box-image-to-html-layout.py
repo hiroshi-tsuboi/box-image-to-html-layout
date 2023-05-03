@@ -96,19 +96,14 @@ class Group:
 
 class Config():
     def __init__(self, filename, debug):
-        self.scale_ = [1]
+        self.fontColorString_ = "#404040"
         try:
             with open(filename, "r") as f:
                 ctxt = json.load(f)
-                if "scale" in ctxt:
-                    self.scale_.clear()
-                    for x in ctxt["scale"]:
-                        self.scale_.append(float(x))
+                if "font-color" in ctxt:
+                    self.fontColorString_ = copy.copy(ctxt["font-color"])
         except:
             print("failed to open %s" % filename, file=sys.stderr)
-
-        if len(self.scale_) == 1:
-            self.scale_.append(self.scale_[0])
 
         if debug:
             #print("scale = %s" % str(self.scale_))
@@ -288,7 +283,7 @@ if not debug:
 
         for child in reversed(target.childs_):
             stack.append(child)
-    print("%s { color: #404040; box-sizing: border-box; }" % allBoxString[:-2])
+    print("%s { color: %s; box-sizing: border-box; }" % (allBoxString[:-2], config.fontColorString_))
 
     print("</style>")
     print("</head>")
