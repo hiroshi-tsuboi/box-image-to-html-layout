@@ -96,15 +96,18 @@ class Group:
 
 class Config():
     def __init__(self, filename, debug):
-        self.fontColorString_ = "#404040"
+        color = "#404040"
+        self.bgColorString_ = ""
         try:
             with open(filename, "r") as f:
                 ctxt = json.load(f)
                 if "font-color" in ctxt:
-                    self.fontColorString_ = copy.copy(ctxt["font-color"])
+                    color = ctxt["font-color"]
+                if "bg-color" in ctxt:
+                    self.bgColorString_ = " background-color: %s;" % ctxt["bg-color"]
         except:
             print("failed to open %s" % filename, file=sys.stderr)
-
+        self.fontColorString_ = "color: %s;" % color
         if debug:
             #print("scale = %s" % str(self.scale_))
             pass
@@ -268,6 +271,8 @@ if not debug:
         target = stack.pop()
         allBoxString += ".box%d, " % target.index_
         option = ""
+        if config.bgColorString_ == "":
+            option += "background-color: %s; " % colorToString(target.color_)
         if len(target.childs_) <= 1:
             pass
         elif 1 == target.flow_:
@@ -279,11 +284,11 @@ if not debug:
             option += "display: flex; flex-direction: row; "
         size = target.size()
         option += target.margin_.string()
-        print(".box%d { width: %dpx; height: %dpx; background-color: %s; %s}" % (target.index_, size[0], size[1], colorToString(target.color_), option))
+        print(".box%d { width: %dpx; height: %dpx; %s}" % (target.index_, size[0], size[1], option))
 
         for child in reversed(target.childs_):
             stack.append(child)
-    print("%s { color: %s; box-sizing: border-box; }" % (allBoxString[:-2], config.fontColorString_))
+    print("%s { %s box-sizing: border-box; }" % (allBoxString[:-2], config.fontColorString_ + config.bgColorString_))
 
     print("</style>")
     print("</head>")
