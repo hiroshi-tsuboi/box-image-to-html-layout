@@ -131,6 +131,10 @@ debug = False
 if "--debug" in sys.argv:
     debug = True
 
+template = False
+if "--template" in sys.argv:
+    template = True
+
 filename = sys.argv[1]
 
 image = None
