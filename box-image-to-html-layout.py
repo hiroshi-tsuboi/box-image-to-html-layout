@@ -118,6 +118,16 @@ def colorToString(color):
         r += "%02X" % color[i]
     return r
 
+def catFile(filename):
+    try:
+        with open(filename, "rt") as f:
+            for line in f:
+                l = line.strip()
+                if 0 < len(l):
+                    print(l)
+    except:
+        print("failed to open %s" % filename, file=sys.stderr)
+
 #
 # main program
 #
