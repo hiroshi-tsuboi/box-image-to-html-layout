@@ -122,7 +122,7 @@ def catFile(filename):
     try:
         with open(filename, "rt") as f:
             for line in f:
-                l = line.strip()
+                l = line.rstrip()
                 if 0 < len(l):
                     print(l)
         return True
