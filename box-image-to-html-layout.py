@@ -143,10 +143,6 @@ debug = False
 if "--debug" in sys.argv:
     debug = True
 
-template = False
-if "--template" in sys.argv:
-    template = True
-
 filename = sys.argv[1]
 
 image = None
@@ -310,9 +306,7 @@ if not debug:
     print("</head>")
     print("<body>")
 
-    boxFileExt = "html"
-    if template:
-        boxFileExt = "tplt"
+    boxFileExt = ["tpl", "html"]
 
     stack = [roots[0]]
     while 0 < len(stack):
@@ -322,10 +316,15 @@ if not debug:
             continue
         print('<div class="box%d">' % target.index_)
         if 0 == len(target.childs_):
-            if not catFile(filename[:basePathIndex+1] + "box%d." % target.index_ + boxFileExt):
-                print("<article>")
-                print("box%d" % target.index_)
-                print("</article>")
+            debugArticle = True
+            for ext in boxFileExt:
+                if catFile(filename[:basePathIndex+1] + "box%d." % target.index_ + ext):
+                    debugArticle = False
+                    break
+            if debugArticle:
+                    print("<article>")
+                    print("box%d" % target.index_)
+                    print("</article>")
         stack.append("</div>")
         for child in reversed(target.childs_):
             stack.append(child)
