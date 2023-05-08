@@ -88,11 +88,11 @@ class Group:
                     target.margin_.update(i, target.mini_[i] - target.parent_.mini_[i])
                 for box in self.boxes_:
                     if box.maxi_[i] < target.mini_[i]:
-                        target.margin_.update(i, target.mini_[i] - box.maxi_[i] + 1)
+                        target.margin_.update(i, target.mini_[i] - box.maxi_[i] - 1)
                 for child in target.childs_:
                     for box in target.childs_:
                         if box.maxi_[i] < child.mini_[i]:
-                            child.margin_.update(i, child.mini_[i] - box.maxi_[i] + 1)
+                            child.margin_.update(i, child.mini_[i] - box.maxi_[i] - 1)
 
 class Config():
     def __init__(self, filename, debug):
@@ -300,7 +300,7 @@ if not debug:
 
         for child in reversed(target.childs_):
             stack.append(child)
-    print("%s { %s box-sizing: border-box; }" % (allBoxString[:-2], config.fontColorString_ + config.bgColorString_))
+    print("%s { %s box-sizing: border-box; padding: 0; }" % (allBoxString[:-2], config.fontColorString_ + config.bgColorString_))
 
     print("</style>")
     print("</head>")
