@@ -33,6 +33,7 @@ class Box():
         self.flow_ = 0
         size = self.size()
         self.area_ = size[0] * size[1]
+        self.option_ = ""
     def __eq__(self, other):
         return self.index_ == other.index_
     def size(self):
@@ -142,6 +143,10 @@ if len(sys.argv) < 2:
 debug = False
 if "--debug" in sys.argv:
     debug = True
+
+inlineStyle = False
+if "--inline" in sys.argv:
+    inlineStyle = True
 
 filename = sys.argv[1]
 
@@ -275,7 +280,8 @@ if not debug:
     print("<!DOCTYPE html>")
     print("<html>")
     print("<head>")
-    print('<style type="text/css">')
+    if not inlineStyle:
+        print('<style type="text/css">')
 
     stack = [roots[0]]
     allBoxString = ""
@@ -296,13 +302,18 @@ if not debug:
             option += "display: flex; flex-direction: row; "
         size = target.size()
         option += target.margin_.string()
-        print(".box%d { width: %dpx; height: %dpx; %s}" % (target.index_, size[0], size[1], option))
+        if inlineStyle:
+            target.option_ = option.strip()
+        else:
+            print(".box%d { width: %dpx; height: %dpx; %s}" % (target.index_, size[0], size[1], option))
 
         for child in reversed(target.childs_):
             stack.append(child)
-    print("%s { %s box-sizing: border-box; padding: 0; }" % (allBoxString[:-2], config.fontColorString_ + config.bgColorString_))
 
-    print("</style>")
+    if not inlineStyle:
+        print("%s { %s box-sizing: border-box; padding: 0; }" % (allBoxString[:-2], config.fontColorString_ + config.bgColorString_))
+        print("</style>")
+
     print("</head>")
     print("<body>")
 
@@ -314,7 +325,11 @@ if not debug:
         if type(target) is str:
             print(target)
             continue
-        print('<div class="box%d">' % target.index_)
+        if inlineStyle:
+            size = target.size()
+            print('<div style="width: %dpx; height: %dpx; %s">' % (size[0], size[1], target.option_))
+        else:
+            print('<div class="box%d">' % target.index_)
         if 0 == len(target.childs_):
             debugArticle = True
             for ext in boxFileExt:
