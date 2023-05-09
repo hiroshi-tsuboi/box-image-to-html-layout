@@ -145,7 +145,12 @@ if "--debug" in sys.argv:
     debug = True
 
 inlineStyle = False
-if "--inline" in sys.argv:
+if "--inlineStyle" in sys.argv:
+    inlineStyle = True
+
+noHeader = False
+if "--noHeader" in sys.argv:
+    noHeader = True
     inlineStyle = True
 
 filename = sys.argv[1]
@@ -277,9 +282,10 @@ for group in groups.values():
 
 # render html
 if not debug:
-    print("<!DOCTYPE html>")
-    print("<html>")
-    print("<head>")
+    if not noHeader:
+        print("<!DOCTYPE html>")
+        print("<html>")
+        print("<head>")
     if not inlineStyle:
         print('<style type="text/css">')
 
@@ -314,8 +320,9 @@ if not debug:
         print("%s { %s box-sizing: border-box; padding: 0; }" % (allBoxString[:-2], config.fontColorString_ + config.bgColorString_))
         print("</style>")
 
-    print("</head>")
-    print("<body>")
+    if not noHeader:
+        print("</head>")
+        print("<body>")
 
     boxFileExt = ["tpl", "html"]
 
@@ -344,8 +351,10 @@ if not debug:
         for child in reversed(target.childs_):
             stack.append(child)
 
-    print("</body>")
-    print("</html>")
+    if not noHeader:
+        print("</body>")
+        print("</html>")
+
     sys.exit()
 
 # debug print
